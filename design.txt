@@ -1,0 +1,48 @@
+## Model
+
+# Channel
+#
+# name
+# id
+# users
+# unread count
+
+# User 
+#
+# name
+# id
+
+extends Channel (user in slacl api)
+# PrivateGroup extends Channel (group in slack api)
+# PublicGroup extends Channel (channel in slack api)
+
+# Notification screen
+#
+# List
+#   channel.name, channel.unread_count
+#
+#  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+# |		Channels					  |
+# |									  |
+# |		aris	*3     				  |
+# |		giulio	*1 					  |
+# |									  |
+# |									  |
+# |		JumpTo:	...					  |
+#  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+# Chat screen
+#
+# List (last 10)
+#   user.name, user.message
+#
+#  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+# |		Chat	     				  |
+# |									  |
+# |		Aris	     				  |
+# |			Pou eisai? 				  |
+# |		Nick						  |
+# |			Edw!					  |
+# |									  |
+# |		Send:	...					  |
+#  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
