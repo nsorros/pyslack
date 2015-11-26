@@ -10,13 +10,15 @@ slack_list_name = {
 	'channels': 'channels',
 	'im': 'ims',
 	'users': 'members',
+	'stars': 'items'
 }
 
 def marshall(channel_name):
 	marshaller = {
 		'group': lambda x: {'name': x['name'], 'id': x['id'], 'members': x['members']},
 		'channel': lambda x: {'name': x['name'], 'id': x['id'], 'members': x['members']},
-		'im': lambda x: {'name': x['user'], 'id': x['id'], 'members': [x['user']]},
+		'im': lambda x: {'name': users[x['user']], 'id': x['id'], 'members': [x['user']]},
+		'users': lambda x: {'name': x['name'], 'id': x['id']}
 	}
 	return marshaller[channel_name]
 
@@ -51,8 +53,9 @@ def get_users():
 			name: string
 			id:   string
 	"""
-	slack_users = get_list("users")
-	pass
+	slack_users = map(marshall("users"), get_list("users"))
+	slack_bot = [{'id': 'USLACKBOT', 'name': 'slackbot'}]
+	return {user['id']: user['name'] for user in slack_users + slack_bot}
 
 def get_stars():
 	return get_list("stars")
@@ -62,9 +65,9 @@ def display_channels(channels):
 		print "    {name}".format(name=channel['name'])
 
 if __name__ == '__main__':
+	users = get_users()
 	channels = get_channels()
 	stars = get_stars()
-	users = get_users()
 
 	is_starred_channel = lambda x: x['id'] in map(lambda x: x['channel'], filter(lambda x: x['type'] in ['im', 'group', 'channel'], stars))
 	starred_channels = filter(is_starred_channel, channels)
