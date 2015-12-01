@@ -13,19 +13,50 @@ slack_list_name = {
 	'stars': 'items'
 }
 
-def marshall(channel_name):
+slack_info_name = {
+	'groups': 'group',
+	'channels': 'channel',
+	'im': 'messages'
+}
+
+def get_info(channel_id, channel_type):
+	url = "{api}/{channel_type}.info".format(api=SLACK_API, channel_type=channel_type)
+	params = {
+		'token': SLACK_TOKEN,
+		'channel': channel_id,
+	}
+	response = requests.get(url, params)
+	if response.status_code == 200 and 'error' not in response.json():
+		return response.json()[slack_info_name[channel_type]]
+	return {}
+
+def get_history(channel_id, channel_type):
+	url = "{api}/{channel_type}.history".format(api=SLACK_API, channel_type=channel_type)
+	params = {
+		'token': SLACK_TOKEN,
+		'channel': channel_id,
+		'count': 1,
+		'unreads': 1
+	}
+	response = requests.get(url, params)
+	if response.status_code == 200 and 'error' not in response.json():
+		return response.json()
+	return {}
+
+def marshall(channel_type):
 	marshaller = {
-		'group': lambda x: {'name': x['name'], 'id': x['id'], 'members': x['members']},
-		'channel': lambda x: {'name': x['name'], 'id': x['id'], 'members': x['members']},
-		'im': lambda x: {'name': users[x['user']], 'id': x['id'], 'members': [x['user']]},
+		'group': lambda x: {'name': x['name'], 'id': x['id'], 'members': x['members'], 'unread_count': get_info(x['id'], 'groups')['unread_count']},
+		'channel': lambda x: {'name': x['name'], 'id': x['id'], 'members': x['members'], 'unread_count': get_info(x['id'], 'channels')['unread_count']},
+		'im': lambda x: {'name': users[x['user']], 'id': x['id'], 'members': [x['user']], 'unread_count': get_history(x['id'], 'im')['unread_count_display']},
 		'users': lambda x: {'name': x['name'], 'id': x['id']}
 	}
-	return marshaller[channel_name]
+	return marshaller[channel_type]
 
 def get_list(list_name):
 	url = "{api}/{name}.list".format(api=SLACK_API, name=list_name)
 	params = {
 		'token': SLACK_TOKEN,
+		'exclude_archived': 1
 	}
 	response = requests.get(url, params)
 	if response.status_code == 200 and 'error' not in response.json():
@@ -60,9 +91,13 @@ def get_users():
 def get_stars():
 	return get_list("stars")
 
+def get_unread_count(channel):
+	pass
+
 def display_channels(channels):
+	import random
 	for channel in channels:
-		print "    {name}".format(name=channel['name'])
+		print "    {name:20} *{unread_count}".format(name=channel['name'], unread_count=channel.get('unread_count', random.randint(0,4)))
 
 if __name__ == '__main__':
 	users = get_users()
