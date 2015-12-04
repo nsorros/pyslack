@@ -16,9 +16,9 @@ slack_list_name = {
 
 def marshall(channel_type):
 	marshaller = {
-		'group': lambda x: {'name': x['name'], 'id': x['id'], 'members': x['members']},
-		'channel': lambda x: {'name': x['name'], 'id': x['id'], 'members': x['members']},
-		'im': lambda x: {'name': users[x['user']], 'id': x['id'], 'members': [x['user']]},
+		'group': lambda x: {'name': x['name'], 'id': x['id'], 'members': x['members'], 'type': 'groups'},
+		'channel': lambda x: {'name': x['name'], 'id': x['id'], 'members': x['members'], 'type': 'channels'},
+		'im': lambda x: {'name': users[x['user']]['name'], 'id': x['id'], 'members': [x['user']], 'type': 'im'},
 		'users': lambda x: {'name': x['name'], 'id': x['id']},
 		'stars': lambda x: {'id': x.get('channel')}
 	}
@@ -67,14 +67,14 @@ def get_stars():
 
 if __name__ == '__main__':
 
-	with open('users.json', 'w') as f:
+	with open('data/users.json', 'w') as f:
 		users = {user['id']: user for user in get_users()}
 		f.write(json.dumps({'data': users}))
 
-	with open('channels.json', 'w') as f:
-		channels = {channel['id']: channel for channel in get_channels()}
+	with open('data/channels.json', 'w') as f:
+		channels = {channel['name']: channel for channel in get_channels()}
 		f.write(json.dumps({'data': channels}))
 
-	with open('stars.json', 'w') as f:
+	with open('data/stars.json', 'w') as f:
 		stars = [star['id'] for star in get_stars()]
 		f.write(json.dumps({'data': stars}))

@@ -1,8 +1,15 @@
-implement autocomplete for channels
-slack ar (tab should autocomplete here or show options)
+# Slack is for marketing people
+===============================
 
-### Usage
-  
+## Setup
+
+* `pip install -r requirements`
+* `python database.py`
+* `alias slack="python slack.py"`
+ 
+## Usage
+
+* `slack`
+* `slack giulio`
 * `slack aris psinesai na fame?`
-* `slack giulio hello`
-* `slack notifications` - prints unread messages sorted by user and mark them as read
+
