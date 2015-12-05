@@ -18,22 +18,22 @@ def get_history(channel):
 		return response.json()
 	return {}
 
-def get_unread_messages(channel):
+def _unread_messages(channel):
 	history = get_history(channel)
 	unread_count = history['unread_count_display']
 	unreads = [
 		message
-		for message in history['messages'][:unread_count+1]
+		for message in history['messages'][:unread_count]
 	]
 	return unreads
 
-def unread_messages(channels):
+def get_unread_messages(channels):
 	messages = [
 		{
 			'text': message['text'],
 			'channel': channel['name']
 		}
 		for channel in channels
-		for message in get_unread_messages(channel)
+		for message in _unread_messages(channel)
 	]
 	return messages

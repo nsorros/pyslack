@@ -2,7 +2,7 @@ import json
 import sys
 import os
 
-from notifications import unread_messages
+from notifications import get_unread_messages
 from chat import send
 
 SLACK_API = 'https://slack.com/api'
@@ -17,8 +17,11 @@ if __name__ == '__main__':
 	
 	if len(sys.argv) == 1:
 		starred_channels = filter(lambda x: x['id'] in stars, channels.values())
-		for message in unread_messages(starred_channels):
+		unread_messages = get_unread_messages(starred_channels)
+		for message in unread_messages:
 			print "  #{channel:20}: {text}".format(channel=message['channel'], text=message['text'][:60])
+		if not unread_messages:
+			print "  No messages. Business as usual."
 		exit
 
 	if len(sys.argv) == 2:
